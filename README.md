@@ -191,3 +191,34 @@ When resuming development:
 3. Create Azure monitoring pipeline
 4. Add EventBridge automation rules
 5. Expand Lambda remediation logic
+
+
+---
+
+## Repository Structure (Planned)
+
+The following structure will support the future work listed above.
+
+multicloud-security-automation
+│
+├── README.md
+│
+├── aws
+│   ├── cloudtrail
+│   ├── cloudwatch
+│   ├── sns
+│   └── lambda
+│
+├── azure
+│
+├── terraform
+│
+└── .github
+    └── workflows
+
+This structure will support:
+
+- AWS security monitoring infrastructure
+- Azure monitoring components
+- Terraform infrastructure as code
+- GitHub Actions CI/CD automation
