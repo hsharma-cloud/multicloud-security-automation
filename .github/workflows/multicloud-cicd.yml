@@ -1,0 +1,30 @@
+name: MultiCloud CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  multicloud:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Verify AWS CLI
+        run: aws --version
+
+      - name: List S3 Buckets
+        run: aws s3 ls
+
+      - name: Check CloudTrail
+        run: aws cloudtrail describe-trails
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Show Azure Account
+        run: az account show
