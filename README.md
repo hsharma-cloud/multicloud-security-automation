@@ -222,3 +222,31 @@ This structure will support:
 - Azure monitoring components
 - Terraform infrastructure as code
 - GitHub Actions CI/CD automation
+
+---
+
+## Screenshots
+
+### CloudTrail Trail Configuration
+![CloudTrail Trail](screenshots/01-cloudtrail-trail-config.png)
+
+### CloudTrail Log Stream
+![CloudTrail Log Stream](screenshots/02-cloudtrail-log-stream.png)
+
+### CloudTrail Event Example
+![CloudTrail Event](screenshots/03-cloudtrail-event.png)
+
+### CloudWatch Metric Filter
+![Metric Filter](screenshots/04-metric-filter-root-login.png)
+
+### CloudWatch Alarm / Detection
+![Metric Filter Result](screenshots/05-metric-filter-root-login.png)
+
+### SNS Topic Configuration
+![SNS Topic](screenshots/06-sns-topic.png)
+
+### Lambda Function
+![Lambda Function](screenshots/07-lambda-function.png)
+
+### Lambda Trigger from SNS
+![Lambda Trigger](screenshots/08-lambda-trigger.png)
