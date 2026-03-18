@@ -1,9 +1,11 @@
-# Multi-Cloud Security Automation
+# Multi-Cloud Security Automation CI/CD Pipeline
 
-## Overview
-This repository documents a **multi-cloud security automation architecture** designed to detect security events, generate alerts, and support automated remediation workflows across cloud environments.
+This project demonstrates a GitHub Actions CI/CD pipeline that:
 
-The first phase focuses on **AWS security monitoring and event-driven automation**. Future phases will extend the architecture to **Azure monitoring and CI/CD security automation using Terraform and GitHub Actions**.
+- Authenticates securely to AWS and Azure
+- Uses GitHub Secrets for credential management
+- Executes cloud validation commands automatically
+- Verifies infrastructure without manual intervention
 
 ---
 
