@@ -9,6 +9,18 @@ This project demonstrates a GitHub Actions CI/CD pipeline that:
 
 ---
 
+## Screenshots
+
+### CI/CD Pipeline Success
+![Pipeline](screenshots/pipeline-success.png)
+
+### AWS Authentication (CI/CD)
+![AWS](screenshots/aws-auth-success.png)
+
+### Azure Account Verification
+![Azure](screenshots/azure-account-output.png)
+
+
 ## Architecture
 
 ### AWS Security Monitoring and Automation Pipeline
