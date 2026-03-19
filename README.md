@@ -273,3 +273,4 @@ This structure will support:
 
 ### Lambda Trigger from SNS
 ![Lambda Trigger](screenshots/08-lambda-trigger.png)
+# trigger

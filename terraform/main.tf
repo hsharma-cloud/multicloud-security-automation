@@ -20,7 +20,7 @@ data "azurerm_subnet" "subnet" {
   resource_group_name  = data.azurerm_resource_group.rg.name
 }
 
-# NEW Resource → Log Analytics
+# NEW: Log Analytics Workspace
 resource "azurerm_log_analytics_workspace" "law" {
   name                = "corp-dev-law"
   location            = data.azurerm_resource_group.rg.location
