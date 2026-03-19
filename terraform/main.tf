@@ -2,7 +2,7 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Unique suffix (used for naming)
+# Unique suffix for S3 bucket
 resource "random_id" "suffix" {
   byte_length = 4
 }
@@ -12,7 +12,7 @@ resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 }
 
-# Subnet (required for EC2)
+# Subnet
 resource "aws_subnet" "main" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.1.0/24"
@@ -82,9 +82,9 @@ resource "aws_s3_bucket_policy" "cloudtrail_policy" {
   })
 }
 
-# CloudTrail (UNIQUE NAME FIX)
+# CloudTrail (MANUAL UNIQUE NAME — FINAL FIX)
 resource "aws_cloudtrail" "trail" {
-  name                          = "security-trail-${random_id.suffix.hex}"
+  name                          = "security-trail-hari-final-001"
   s3_bucket_name                = aws_s3_bucket.cloudtrail_bucket.id
   include_global_service_events = true
   is_multi_region_trail         = true
