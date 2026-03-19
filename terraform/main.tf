@@ -2,28 +2,33 @@ provider "azurerm" {
   features {}
 }
 
-# Use existing Resource Group (DO NOT recreate)
+# -------------------------------
+# EXISTING RESOURCE GROUP
+# -------------------------------
 data "azurerm_resource_group" "rg" {
   name = "corp-dev-rg"
 }
 
-# Virtual Network
-resource "azurerm_virtual_network" "vnet" {
+# -------------------------------
+# EXISTING VIRTUAL NETWORK
+# -------------------------------
+data "azurerm_virtual_network" "vnet" {
   name                = "corp-dev-vnet"
-  address_space       = ["10.0.0.0/16"]
-  location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
 }
 
-# Subnet for AKS
-resource "azurerm_subnet" "subnet" {
+# -------------------------------
+# EXISTING SUBNET
+# -------------------------------
+data "azurerm_subnet" "subnet" {
   name                 = "corp-dev-subnet"
+  virtual_network_name = data.azurerm_virtual_network.vnet.name
   resource_group_name  = data.azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.1.0/24"]
 }
 
-# AKS Cluster
+# -------------------------------
+# AKS CLUSTER (ONLY RESOURCE CREATED)
+# -------------------------------
 resource "azurerm_kubernetes_cluster" "aks" {
   name                = "corp-dev-aks"
   location            = data.azurerm_resource_group.rg.location
@@ -31,9 +36,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dns_prefix          = "corpdevaks"
 
   default_node_pool {
-    name       = "nodepool1"
-    node_count = 1
-    vm_size    = "Standard_DC2s_v3"   # ✅ works in your subscription
+    name           = "nodepool1"
+    node_count     = 1
+    vm_size        = "Standard_DC2s_v3"   # ✅ allowed in your subscription
+    vnet_subnet_id = data.azurerm_subnet.subnet.id
   }
 
   identity {
