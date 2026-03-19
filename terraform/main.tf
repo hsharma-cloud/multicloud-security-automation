@@ -28,3 +28,19 @@ data "azurerm_log_analytics_workspace" "law" {
 resource "azurerm_sentinel_log_analytics_workspace_onboarding" "sentinel" {
   workspace_id = data.azurerm_log_analytics_workspace.law.id
 }
+
+resource "azurerm_sentinel_alert_rule_scheduled" "test_rule" {
+  name                       = "test-alert-rule"
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
+  display_name               = "Test Alert Rule"
+  severity                   = "Medium"
+  query                      = <<QUERY
+SecurityEvent
+| take 5
+QUERY
+  query_frequency            = "PT5M"
+  query_period               = "PT5M"
+  trigger_operator           = "GreaterThan"
+  trigger_threshold          = 0
+  enabled                    = true
+}
