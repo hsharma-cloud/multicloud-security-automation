@@ -2,6 +2,11 @@ provider "aws" {
   region = "us-east-1"
 }
 
+# Get default VPC
+data "aws_vpc" "default" {
+  default = true
+}
+
 # S3 bucket for CloudTrail logs
 resource "aws_s3_bucket" "cloudtrail_bucket" {
   bucket = "cloudtrail-secure-logstorage-hari-2026"
@@ -13,7 +18,7 @@ resource "aws_s3_bucket" "cloudtrail_bucket" {
   }
 }
 
-# Enable versioning (best practice for logs)
+# Enable versioning
 resource "aws_s3_bucket_versioning" "versioning" {
   bucket = aws_s3_bucket.cloudtrail_bucket.id
 
@@ -22,7 +27,7 @@ resource "aws_s3_bucket_versioning" "versioning" {
   }
 }
 
-# Block public access (security best practice)
+# Block public access
 resource "aws_s3_bucket_public_access_block" "block_public" {
   bucket = aws_s3_bucket.cloudtrail_bucket.id
 
@@ -32,7 +37,41 @@ resource "aws_s3_bucket_public_access_block" "block_public" {
   restrict_public_buckets = true
 }
 
-# CloudTrail configuration
+# REQUIRED: CloudTrail bucket policy
+resource "aws_s3_bucket_policy" "cloudtrail_policy" {
+  bucket = aws_s3_bucket.cloudtrail_bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid = "AWSCloudTrailAclCheck"
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudtrail.amazonaws.com"
+        }
+        Action   = "s3:GetBucketAcl"
+        Resource = aws_s3_bucket.cloudtrail_bucket.arn
+      },
+      {
+        Sid = "AWSCloudTrailWrite"
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudtrail.amazonaws.com"
+        }
+        Action   = "s3:PutObject"
+        Resource = "${aws_s3_bucket.cloudtrail_bucket.arn}/*"
+        Condition = {
+          StringEquals = {
+            "s3:x-amz-acl" = "bucket-owner-full-control"
+          }
+        }
+      }
+    ]
+  })
+}
+
+# CloudTrail
 resource "aws_cloudtrail" "trail" {
   name                          = "security-trail"
   s3_bucket_name                = aws_s3_bucket.cloudtrail_bucket.id
@@ -40,7 +79,7 @@ resource "aws_cloudtrail" "trail" {
   is_multi_region_trail         = true
 
   depends_on = [
-    aws_s3_bucket.cloudtrail_bucket
+    aws_s3_bucket_policy.cloudtrail_policy
   ]
 }
 
@@ -56,10 +95,11 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
-# Security group for EC2 (allow SSH)
+# Security group (FIXED with VPC)
 resource "aws_security_group" "ec2_sg" {
   name        = "ec2-security-group"
   description = "Allow SSH access"
+  vpc_id      = data.aws_vpc.default.id
 
   ingress {
     from_port   = 22
