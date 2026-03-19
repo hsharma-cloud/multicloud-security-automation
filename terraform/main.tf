@@ -20,11 +20,7 @@ data "azurerm_subnet" "subnet" {
   resource_group_name  = data.azurerm_resource_group.rg.name
 }
 
-# NEW: Log Analytics Workspace
-resource "azurerm_log_analytics_workspace" "law" {
+data "azurerm_log_analytics_workspace" "law" {
   name                = "corp-dev-law"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
-  sku                 = "PerGB2018"
-  retention_in_days   = 30
+  resource_group_name = "corp-dev-rg"
 }
