@@ -2,14 +2,19 @@ provider "aws" {
   region = "us-east-1"
 }
 
+# Generate unique suffix
+resource "random_id" "suffix" {
+  byte_length = 4
+}
+
 # Get default VPC
 data "aws_vpc" "default" {
   default = true
 }
 
-# S3 bucket for CloudTrail logs
+# S3 bucket for CloudTrail logs (UNIQUE NAME)
 resource "aws_s3_bucket" "cloudtrail_bucket" {
-  bucket = "cloudtrail-secure-logstorage-hari-2026"
+  bucket = "cloudtrail-secure-logstorage-hari-${random_id.suffix.hex}"
 
   tags = {
     Name        = "CloudTrail Log Storage"
@@ -95,7 +100,7 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
-# Security group (FIXED with VPC)
+# Security group
 resource "aws_security_group" "ec2_sg" {
   name        = "ec2-security-group"
   description = "Allow SSH access"
