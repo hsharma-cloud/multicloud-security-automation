@@ -1,9 +1,9 @@
 terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.0"
-    }
+  backend "azurerm" {
+    resource_group_name  = "tfstate-rg"
+    storage_account_name = "tfstate6425"
+    container_name       = "tfstate"
+    key                  = "terraform.tfstate"
   }
 }
 
@@ -39,4 +39,23 @@ output "log_analytics_workspace_name" {
 
 output "log_analytics_workspace_id" {
   value = data.azurerm_log_analytics_workspace.law.id
+}
+
+
+resource "azurerm_sentinel_alert_rule_scheduled" "rule1" {
+  name                       = "suspicious-activity-rule"
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
+  display_name               = "Suspicious Activity Rule"
+  severity                   = "Medium"
+
+  query = <<QUERY
+SecurityEvent
+| take 5
+QUERY
+
+  query_frequency  = "PT5M"
+  query_period     = "PT5M"
+  trigger_operator = "GreaterThan"
+  trigger_threshold = 0
+  enabled          = true
 }
