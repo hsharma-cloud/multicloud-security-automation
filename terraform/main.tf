@@ -26,7 +26,10 @@ data "azurerm_log_analytics_workspace" "law" {
 }
 
 
-resource "azurerm_sentinel_alert_rule_scheduled" "test_rule" {
+data "azurerm_sentinel_alert_rule_scheduled" "test_rule" {
+  name                       = "test-alert-rule"
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
+}
   name                       = "test-alert-rule"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
   display_name               = "Test Alert Rule"
