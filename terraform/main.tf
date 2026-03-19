@@ -2,24 +2,23 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Generate unique suffix
+# Generate unique suffix (prevents bucket name conflicts)
 resource "random_id" "suffix" {
   byte_length = 4
 }
 
-# Get default VPC
-data "aws_vpc" "default" {
-  default = true
+# Create VPC (no dependency on default VPC)
+resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
 }
 
-# S3 bucket for CloudTrail logs (UNIQUE NAME)
+# Create S3 bucket (unique name)
 resource "aws_s3_bucket" "cloudtrail_bucket" {
   bucket = "cloudtrail-secure-logstorage-hari-${random_id.suffix.hex}"
 
   tags = {
     Name        = "CloudTrail Log Storage"
     Environment = "Production"
-    Purpose     = "Security Monitoring"
   }
 }
 
@@ -42,7 +41,7 @@ resource "aws_s3_bucket_public_access_block" "block_public" {
   restrict_public_buckets = true
 }
 
-# REQUIRED: CloudTrail bucket policy
+# REQUIRED CloudTrail bucket policy
 resource "aws_s3_bucket_policy" "cloudtrail_policy" {
   bucket = aws_s3_bucket.cloudtrail_bucket.id
 
@@ -88,7 +87,7 @@ resource "aws_cloudtrail" "trail" {
   ]
 }
 
-# Get latest Amazon Linux 2 AMI
+# Get latest Amazon Linux AMI
 data "aws_ami" "amazon_linux" {
   most_recent = true
 
@@ -100,11 +99,11 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
-# Security group
+# Security group (attached to our VPC)
 resource "aws_security_group" "ec2_sg" {
   name        = "ec2-security-group"
   description = "Allow SSH access"
-  vpc_id      = data.aws_vpc.default.id
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     from_port   = 22
