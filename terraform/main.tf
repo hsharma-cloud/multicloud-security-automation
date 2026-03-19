@@ -2,25 +2,21 @@ provider "azurerm" {
   features {}
 }
 
-# EXISTING RESOURCE GROUP
 data "azurerm_resource_group" "rg" {
   name = "corp-dev-rg"
 }
 
-# EXISTING VNET
 data "azurerm_virtual_network" "vnet" {
   name                = "corp-dev-vnet"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
 
-# EXISTING SUBNET
 data "azurerm_subnet" "subnet" {
   name                 = "corp-dev-subnet"
   virtual_network_name = data.azurerm_virtual_network.vnet.name
   resource_group_name  = data.azurerm_resource_group.rg.name
 }
 
-# AKS CLUSTER
 resource "azurerm_kubernetes_cluster" "aks" {
   name                = "corp-dev-aks"
   location            = data.azurerm_resource_group.rg.location
