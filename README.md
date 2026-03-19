@@ -273,6 +273,3 @@ This structure will support:
 
 ### Lambda Trigger from SNS
 ![Lambda Trigger](screenshots/08-lambda-trigger.png)
-# trigger pipeline
-# trigger pipeline
-force Wed Mar 18 21:32:28 EDT 2026
