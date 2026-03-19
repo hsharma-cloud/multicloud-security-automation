@@ -2,17 +2,24 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Generate unique suffix (prevents bucket name conflicts)
+# Unique suffix for S3 bucket
 resource "random_id" "suffix" {
   byte_length = 4
 }
 
-# Create VPC (no dependency on default VPC)
+# VPC
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 }
 
-# Create S3 bucket (unique name)
+# Subnet (REQUIRED for EC2)
+resource "aws_subnet" "main" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "us-east-1a"
+}
+
+# S3 bucket (UNIQUE)
 resource "aws_s3_bucket" "cloudtrail_bucket" {
   bucket = "cloudtrail-secure-logstorage-hari-${random_id.suffix.hex}"
 
@@ -41,7 +48,7 @@ resource "aws_s3_bucket_public_access_block" "block_public" {
   restrict_public_buckets = true
 }
 
-# REQUIRED CloudTrail bucket policy
+# CloudTrail bucket policy (REQUIRED)
 resource "aws_s3_bucket_policy" "cloudtrail_policy" {
   bucket = aws_s3_bucket.cloudtrail_bucket.id
 
@@ -99,7 +106,7 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
-# Security group (attached to our VPC)
+# Security group
 resource "aws_security_group" "ec2_sg" {
   name        = "ec2-security-group"
   description = "Allow SSH access"
@@ -120,10 +127,12 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
-# EC2 instance
+# EC2 instance (FIXED with subnet)
 resource "aws_instance" "web" {
   ami           = data.aws_ami.amazon_linux.id
   instance_type = "t2.micro"
+
+  subnet_id = aws_subnet.main.id
 
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
 
