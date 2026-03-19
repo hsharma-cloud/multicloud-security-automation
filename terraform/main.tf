@@ -2,7 +2,7 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Unique suffix for S3 bucket
+# Unique suffix (used for naming)
 resource "random_id" "suffix" {
   byte_length = 4
 }
@@ -12,14 +12,14 @@ resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 }
 
-# Subnet (REQUIRED for EC2)
+# Subnet (required for EC2)
 resource "aws_subnet" "main" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = "10.0.1.0/24"
   availability_zone = "us-east-1a"
 }
 
-# S3 bucket (UNIQUE)
+# S3 bucket (unique)
 resource "aws_s3_bucket" "cloudtrail_bucket" {
   bucket = "cloudtrail-secure-logstorage-hari-${random_id.suffix.hex}"
 
@@ -48,7 +48,7 @@ resource "aws_s3_bucket_public_access_block" "block_public" {
   restrict_public_buckets = true
 }
 
-# CloudTrail bucket policy (REQUIRED)
+# CloudTrail bucket policy
 resource "aws_s3_bucket_policy" "cloudtrail_policy" {
   bucket = aws_s3_bucket.cloudtrail_bucket.id
 
@@ -82,9 +82,9 @@ resource "aws_s3_bucket_policy" "cloudtrail_policy" {
   })
 }
 
-# CloudTrail
+# CloudTrail (UNIQUE NAME FIX)
 resource "aws_cloudtrail" "trail" {
-  name                          = "security-trail"
+  name                          = "security-trail-${random_id.suffix.hex}"
   s3_bucket_name                = aws_s3_bucket.cloudtrail_bucket.id
   include_global_service_events = true
   is_multi_region_trail         = true
@@ -127,7 +127,7 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
-# EC2 instance (FIXED with subnet)
+# EC2 instance
 resource "aws_instance" "web" {
   ami           = data.aws_ami.amazon_linux.id
   instance_type = "t2.micro"
