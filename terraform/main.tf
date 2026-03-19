@@ -25,9 +25,6 @@ data "azurerm_log_analytics_workspace" "law" {
   resource_group_name = "corp-dev-rg"
 }
 
-resource "azurerm_sentinel_log_analytics_workspace_onboarding" "sentinel" {
-  workspace_id = data.azurerm_log_analytics_workspace.law.id
-}
 
 resource "azurerm_sentinel_alert_rule_scheduled" "test_rule" {
   name                       = "test-alert-rule"
