@@ -23,9 +23,6 @@ This project demonstrates a GitHub Actions CI/CD pipeline that:
 
 ### Terraform Execution
 
-#### Terraform Plan
-![Terraform Plan](screenshots/terraform-plan.png)
-
 #### Terraform Apply
 ![Terraform Apply](screenshots/terraform-apply-result.png)
 
