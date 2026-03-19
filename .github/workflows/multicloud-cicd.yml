@@ -1,68 +1,36 @@
-name: MultiCloud CI/CD Pipeline
+name: Multicloud Security CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-  terraform-plan:
+  terraform:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: terraform
+
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Azure Login
+        uses: azure/login@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # 🔥 CLEAN STATE (critical fix)
-      - name: Clean Terraform State
-        run: rm -rf .terraform terraform.tfstate terraform.tfstate.backup
-        working-directory: terraform
-
-      - name: Terraform Init (fresh)
-        run: terraform init -reconfigure
-        working-directory: terraform
+      - name: Terraform Init
+        run: terraform init
 
       - name: Terraform Plan
         run: terraform plan
-        working-directory: terraform
-
-  terraform-apply:
-    needs: terraform-plan
-    runs-on: ubuntu-latest
-    environment: production
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      # 🔥 CLEAN STATE AGAIN (important)
-      - name: Clean Terraform State
-        run: rm -rf .terraform terraform.tfstate terraform.tfstate.backup
-        working-directory: terraform
-
-      - name: Terraform Init (fresh)
-        run: terraform init -reconfigure
-        working-directory: terraform
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        working-directory: terraform
