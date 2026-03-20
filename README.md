@@ -205,6 +205,22 @@ Planned next stages:
 
 ---
 
+## 🚀 Azure Security Automation (Terraform)
+
+### 🌐 Network Infrastructure Deployment
+![Resource Group](screenshots/cicd-rg-success.png.png)
+![Virtual Network](screenshots/cicd-vnet-success.png)
+![Subnet](screenshots/cicd-subnet-success.png)
+
+### 📊 Log Analytics Integration
+![Log Analytics](screenshots/cicd-log-analytics-read-success.png)
+
+### 🛡️ Microsoft Sentinel Enabled
+![Sentinel](screenshots/cicd-microsoft-sentinel-enabled.png)
+
+### ⚙️ Terraform Execution
+![Terraform Apply](screenshots/terraform-apply-result.png)
+
 ## Notes for Future Work
 
 When resuming development:
